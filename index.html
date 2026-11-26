@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>GitHub Pages YouTube Player</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 850px;
+      width: 100%;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      background-color: #161b22;
+      color: #c9d1d9;
+      font-size: 15px;
+    }
+    button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      background-color: #238636;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2ea043;
+    }
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background-color: #161b22;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form class="controls" id="video-form">
+      <input
+        type="text"
+        id="video-input"
+        placeholder="Paste a YouTube URL or 11-character Video ID..."
+        autocomplete="off"
+      />
+      <button type="submit">Load Video</button>
+    </form>
+
+    <div class="video-wrapper">
+      <iframe
+        id="yt-player"
+        title="YouTube video player"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_ID = "dQw4w9WgXcQ"; // Fallback video if none is passed
+    const player = document.getElementById("yt-player");
+    const input = document.getElementById("video-input");
+    const form = document.getElementById("video-form");
+
+    function extractVideoId(value) {
+      if (!value) return null;
+      const trimmed = value.trim();
+      if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+
+      const match = trimmed.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/
+      );
+      return match ? match[1] : null;
+    }
+
+    function loadVideo(rawInput, updateUrl = true) {
+      const videoId = extractVideoId(rawInput) || DEFAULT_ID;
+      const origin = encodeURIComponent(window.location.origin);
+      player.src = `https://youtube-nocookie.com{videoId}?origin=${origin}&rel=0`;
+      input.value = videoId;
+
+      if (updateUrl) {
+        const url = new URL(window.location);
+        url.searchParams.set("v", videoId);
+        window.history.replaceState({}, "", url);
+      }
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const parsed = extractVideoId(input.value);
+      if (parsed) {
+        loadVideo(parsed, true);
+      } else {
+        alert("Please enter a valid YouTube link or 11-character Video ID.");
+      }
+    });
+
+    // Check URL parameters (?v=ID or ?id=ID) on initial page load
+    const params = new URLSearchParams(window.location.search);
+    const initialParam = params.get("v") || params.get("id");
+    loadVideo(initialParam, false);
+  </script>
+</body>
+</html>
+

@@ -1,4 +1,3 @@
-# yt-embed-player
 # YT Embed Player
 
 A lightweight, static YouTube video player hosted on GitHub Pages that allows passing any YouTube video ID or URL dynamically while properly handling `origin` and `referrerpolicy` headers to prevent embed playback errors.

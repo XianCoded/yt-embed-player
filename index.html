@@ -112,7 +112,7 @@
     function loadVideo(rawInput, updateUrl = true) {
       const videoId = extractVideoId(rawInput) || DEFAULT_ID;
       const origin = encodeURIComponent(window.location.origin);
-      const embedBase = ["https://youtube-nocookie.com", "embed", videoId].join("/");
+      const embedBase = ["https://www.youtube.com", "embed", videoId].join("/");
       player.src = embedBase + "?origin=" + origin + "&rel=0";
       input.value = videoId;
 

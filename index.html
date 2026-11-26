@@ -106,13 +106,14 @@
       const match = trimmed.match(
         /(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/
       );
-      return match ? match : null;
+      return match ? match[1] : null;
     }
 
     function loadVideo(rawInput, updateUrl = true) {
       const videoId = extractVideoId(rawInput) || DEFAULT_ID;
       const origin = encodeURIComponent(window.location.origin);
-      player.src = "https://youtube-nocookie.com" + videoId + "?origin=" + origin + "&rel=0";
+      const embedBase = ["https://youtube-nocookie.com", "embed", videoId].join("/");
+      player.src = embedBase + "?origin=" + origin + "&rel=0";
       input.value = videoId;
 
       if (updateUrl) {

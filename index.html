@@ -86,14 +86,14 @@
         id="yt-player"
         title="YouTube video player"
         referrerpolicy="strict-origin-when-cross-origin"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="picture-in-picture; fullscreen"
         allowfullscreen>
       </iframe>
     </div>
   </div>
 
   <script>
-    const DEFAULT_ID = "dQw4w9WgXcQ"; // Fallback video if none is passed
+    const DEFAULT_ID = "dQw4w9WgXcQ";
     const player = document.getElementById("yt-player");
     const input = document.getElementById("video-input");
     const form = document.getElementById("video-form");
@@ -106,13 +106,13 @@
       const match = trimmed.match(
         /(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/
       );
-      return match ? match[1] : null;
+      return match ? match : null;
     }
 
     function loadVideo(rawInput, updateUrl = true) {
       const videoId = extractVideoId(rawInput) || DEFAULT_ID;
       const origin = encodeURIComponent(window.location.origin);
-      player.src = `https://youtube-nocookie.com{videoId}?origin=${origin}&rel=0`;
+      player.src = "https://youtube-nocookie.com" + videoId + "?origin=" + origin + "&rel=0";
       input.value = videoId;
 
       if (updateUrl) {
@@ -132,11 +132,9 @@
       }
     });
 
-    // Check URL parameters (?v=ID or ?id=ID) on initial page load
     const params = new URLSearchParams(window.location.search);
     const initialParam = params.get("v") || params.get("id");
     loadVideo(initialParam, false);
   </script>
 </body>
 </html>
-
